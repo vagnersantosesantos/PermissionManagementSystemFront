@@ -9,7 +9,8 @@ import {
   MenuItem,
   Box,
 } from '@mui/material';
-import { Permission, CreatePermissionDto, UpdatePermissionDto } from '../types/Permission';
+import { Permission, CreatePermissionDto, UpdatePermissionDto, PermissionType } from '../types/Permission';
+import permissionTypeService from '../services/permissionTypeService';
 
 interface PermissionFormProps {
   open: boolean;
@@ -18,13 +19,6 @@ interface PermissionFormProps {
   permission?: Permission;
   mode: 'create' | 'edit';
 }
-
-const permissionTypes = [
-  { id: 1, description: 'Consultor' },
-  { id: 2, description: 'Lider' },
-  { id: 3, description: 'Gerente' },
-  { id: 4, description: 'Admin' },
-];
 
 const PermissionForm: React.FC<PermissionFormProps> = ({
   open,
@@ -41,6 +35,13 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
   });
 
   const [loading, setLoading] = useState(false);
+  const [permissionTypes, setPermissionTypes] = useState<PermissionType[]>([]);
+
+  useEffect(() => {
+    if (open) {
+      loadPermissionTypes();
+    }
+  }, [open]);
 
   useEffect(() => {
     if (mode === 'edit' && permission) {
@@ -61,6 +62,15 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
       });
     }
   }, [permission, mode, open]);
+
+  const loadPermissionTypes = async () => {
+    try {
+      const types = await permissionTypeService.getPermissionTypes();
+      setPermissionTypes(types);
+    } catch (error) {
+      console.error('Error al cargar tipos de permiso:', error);
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -123,11 +133,17 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
               required
               fullWidth
             >
-              {permissionTypes.map((type) => (
-                <MenuItem key={type.id} value={type.id}>
-                  {type.description}
+              {permissionTypes.length === 0 ? (
+                <MenuItem value="" disabled>
+                  Cargando tipos...
                 </MenuItem>
-              ))}
+              ) : (
+                permissionTypes.map((type) => (
+                  <MenuItem key={type.id} value={type.id}>
+                    {type.description}
+                  </MenuItem>
+                ))
+              )}
             </TextField>
             <TextField
               label="Fecha del Permiso"

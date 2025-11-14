@@ -20,7 +20,7 @@ interface PermissionListProps {
 }
 
 const PermissionList: React.FC<PermissionListProps> = ({ permissions, onEdit }) => {
-  const [permissionTypes, setPermissionTypes] = useState<PermissionType[]>([]);
+const [permissionTypes, setPermissionTypes] = useState<PermissionType[]>([]);
 
   useEffect(() => {
     loadPermissionTypes();
