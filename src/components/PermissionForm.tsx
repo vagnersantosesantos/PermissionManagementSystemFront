@@ -38,12 +38,6 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
   const [permissionTypes, setPermissionTypes] = useState<PermissionType[]>([]);
 
   useEffect(() => {
-    if (open) {
-      loadPermissionTypes();
-    }
-  }, [open]);
-
-  useEffect(() => {
     if (mode === 'edit' && permission) {
       setFormData({
         nombreEmpleado: permission.nombreEmpleado,
@@ -60,6 +54,10 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
         tipoPermiso: 1,
         fechaPermiso: new Date().toISOString().split('T')[0],
       });
+    }
+
+    if (open) {
+      loadPermissionTypes();
     }
   }, [permission, mode, open]);
 
